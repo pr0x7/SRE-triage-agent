@@ -70,18 +70,6 @@ Here is what happens when you trigger an incident:
 4. **Reproduction & Patch**: The `repro-agent` boots up a Docker sandbox, spins up the broken service, and writes a test script to confidently trigger the exact bug. The `patch-writer` then drops in a fix and reruns the test.
 5. **Human Approval & Rubric Grading**: Before anything touches production, execution pauses. You get a clean diff. If approved, the agent self-grades the patch against strict SRE rules. If it fails, it branches, rewinds, and tries again!
 
-## The Rehearsed Demo Sequence
-
-To show off the full power of the agent in a live demo, follow these exact steps:
-
-1. **Setup**: Have your terminal open on the left and [LangSmith / LangGraph Studio](https://smith.langchain.com) open on the right.
-2. **Trigger**: Run `python scripts/run_incident.py --incident incidents/sample_n_plus_one.json`
-3. **Trace the Fan-out**: Look at LangSmith. Point out the three subagents executing in parallel to gather context.
-4. **Repro Confirmation**: Show the terminal logging: `✅ Bug reproduced successfully in sandbox`.
-5. **The Approval Gate**: The terminal will pause with a giant `🚨 HUMAN APPROVAL REQUIRED 🚨` prompt, showing the exact code diff. 
-6. **Rejecting a Bad Patch (Optional)**: If you manually reject it, or if the Rubric Grader catches an issue (like swallowed exceptions), point out the terminal output: `🌲 Branching... ⏪ Rewinding checkpoint`. The agent time-travels back to triage and tries the next best hypothesis!
-7. **Memory Usage**: Once resolved, run the exact same command again. The agent will instantly print: `I've seen this before... jumping to known fix` and bypass the entire parallel investigation phase!
-
 ## Project Structure
 
 ```
