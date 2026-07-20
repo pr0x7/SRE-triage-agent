@@ -1,0 +1,19 @@
+{
+  "incident_id": "INC-002",
+  "title": "AttributeError in User Profile Service",
+  "service": "breakomatic",
+  "severity": "high",
+  "timestamp": "2026-07-20T10:05:00Z",
+  "stack_trace": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.11/site-packages/starlette/routing.py\", line 73, in app\n    response = await func(request)\n  File \"/usr/local/lib/python3.11/site-packages/fastapi/routing.py\", line 290, in app\n    raw_response = await run_endpoint_function(\n  File \"/usr/local/lib/python3.11/site-packages/fastapi/routing.py\", line 191, in run_endpoint_function\n    return await dependant.call(**values)\n  File \"/workspace/breakomatic/app.py\", line 49, in get_user\n    return {\"id\": user.id, \"name\": user.name, \"bio\": f\"BIO: {user.profile_bio.upper()}\"}\nAttributeError: 'NoneType' object has no attribute 'upper'",
+  "logs": [
+    "[ERROR] 10:05:01 Exception in request handling: AttributeError: 'NoneType' object has no attribute 'upper'",
+    "[INFO] 10:05:01 GET /users/3 - 500 Internal Server Error"
+  ],
+  "recent_deploys": [
+    {"commit": "a1b2c3d", "message": "Add user bio formatting"}
+  ],
+  "metrics": {
+    "error_rate_users": 10.0,
+    "latency_ms_users": 15
+  }
+}

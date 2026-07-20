@@ -1,0 +1,1 @@
+{"incident_id": "test_phase_7_kill", "title": "Test Phase 7", "service": "breakomatic", "severity": "HIGH", "timestamp": "2024-01-01T12:00:00Z", "stack_trace": "test", "logs": [], "recent_deploys": [], "metrics": {}}

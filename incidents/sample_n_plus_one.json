@@ -1,0 +1,31 @@
+{
+  "incident_id": "sample-003",
+  "service": "breakomatic",
+  "severity": "P1",
+  "timestamp": "2025-01-15T14:32:00Z",
+  "title": "GET /orders endpoint returning 500s — suspected N+1 query timeout",
+  "stack_trace": "Traceback (most recent call last):\n  File \"/app/breakomatic/app.py\", line 42, in get_orders\n    items = [get_items_for_order(o.id) for o in orders]\n  File \"/app/breakomatic/app.py\", line 28, in get_items_for_order\n    return db.execute(select(Item).where(Item.order_id == order_id)).scalars().all()\nsqlalchemy.exc.TimeoutError: QueuePool limit of size 5 overflow 10 reached, connection timed out",
+  "logs": [
+    "2025-01-15T14:31:55Z [INFO] GET /orders - started",
+    "2025-01-15T14:31:55Z [DEBUG] SELECT * FROM orders",
+    "2025-01-15T14:31:55Z [DEBUG] SELECT * FROM items WHERE order_id = 1",
+    "2025-01-15T14:31:55Z [DEBUG] SELECT * FROM items WHERE order_id = 2",
+    "2025-01-15T14:31:56Z [DEBUG] SELECT * FROM items WHERE order_id = 3",
+    "2025-01-15T14:31:56Z [DEBUG] ... (247 more individual queries)",
+    "2025-01-15T14:32:00Z [ERROR] Connection pool exhausted after 250 queries",
+    "2025-01-15T14:32:00Z [ERROR] 500 Internal Server Error: GET /orders"
+  ],
+  "recent_deploys": [
+    {
+      "sha": "abc123f",
+      "message": "feat: add order items to /orders response",
+      "author": "dev@example.com",
+      "timestamp": "2025-01-15T13:45:00Z"
+    }
+  ],
+  "metrics": {
+    "p99_latency_ms": 12500,
+    "error_rate_percent": 78.3,
+    "db_connection_pool_usage_percent": 100
+  }
+}

@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sre-agent"
+version = "0.1.0"
+description = "Autonomous SRE Incident-Triage Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+
+dependencies = [
+    # --- Core agent framework ---
+    "deepagents>=0.6.5",
+    "langgraph",
+    "langchain-groq",                    # Groq free tier (zero cost)
+    "langgraph-checkpoint-sqlite",
+
+    # --- Break-o-matic target service ---
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "pydantic>=2.0",
+
+    # --- Sandbox backend ---
+    "docker>=7.0",
+
+    # --- Testing ---
+    "pytest",
+    "pytest-asyncio",
+
+    # --- Utilities ---
+    "python-dotenv",
+    "httpx",                            # async HTTP client for agent tools
+    "rich",                             # pretty CLI output
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy",
+    "pre-commit",
+]
+
+[project.scripts]
+sre-run = "scripts.run_incident:main"
+sre-seed = "scripts.seed_bug:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["evals"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["agent", "breakomatic", "evals", "dashboard", "scripts"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100

@@ -1,0 +1,50 @@
+# Environment & secrets
+.env
+*.env.local
+
+# Break-o-matic runtime files
+breakomatic/.active_bug.json
+breakomatic/breakomatic.db
+breakomatic/breakomatic.db-wal
+breakomatic/breakomatic.db-shm
+
+# Orchestrator Databases
+store.db
+store.db-wal
+store.db-shm
+checkpoints.db
+checkpoints.db-wal
+checkpoints.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
