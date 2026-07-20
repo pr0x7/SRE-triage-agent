@@ -39,6 +39,24 @@ Orchestrator (deepagents: create_deep_agent)
 - **Docker** — sandboxed execution backend (local, free)
 - **break-o-matic** — synthetic target service with injectable bugs
 
+## Installation & Setup
+
+```bash
+# 1. Clone and install
+git clone https://github.com/pr0x7/SRE-triage-agent.git
+cd SRE-triage-agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env and add your LANGSMITH_API_KEY and Groq/Gemini API keys
+
+# 3. Verify Docker sandbox works
+python scripts/verify_phase0.py
+```
+
 ## Quick Start (60-Second Walkthrough)
 
 Here is what happens when you trigger an incident:
@@ -67,7 +85,7 @@ To show off the full power of the agent in a live demo, follow these exact steps
 ## Project Structure
 
 ```
-sre-agent/
+SRE-triage-agent/
 ├── agent/                  # Core agent logic
 │   ├── docker_sandbox.py   # Local Docker sandbox backend
 │   ├── orchestrator.py     # Top-level agent entrypoint
