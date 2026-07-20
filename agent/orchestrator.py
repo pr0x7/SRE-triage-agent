@@ -206,6 +206,34 @@ def db_inspector_node(state: SubagentInput) -> dict:
     }
 
 
+def apm_analyzer_node(state: SubagentInput) -> dict:
+    """Run apm-analyzer subagent concurrently."""
+    logger.info("orchestrator: dispatching apm-analyzer subagent...")
+    from agent.subagents.apm_analyzer import run_apm_analyzer
+
+    output = run_apm_analyzer(state["incident_context"])
+    return {
+        "subagent_outputs": [{
+            "subagent": "apm-analyzer",
+            "output": output,
+        }]
+    }
+
+
+def git_blame_node(state: SubagentInput) -> dict:
+    """Run git-blame subagent concurrently."""
+    logger.info("orchestrator: dispatching git-blame subagent...")
+    from agent.subagents.git_blame import run_git_blame
+
+    output = run_git_blame(state["incident_context"])
+    return {
+        "subagent_outputs": [{
+            "subagent": "git-blame",
+            "output": output,
+        }]
+    }
+
+
 def aggregate_node(state: AgentState) -> dict:
     """Collect subagent findings, stop sandbox, and select best hypothesis."""
     logger.info("orchestrator: aggregating subagent findings...")
@@ -461,7 +489,7 @@ def diagnose_node(state: AgentState, store: BaseStore) -> dict:
 
 
 def route_to_subagents(state: AgentState) -> list[Send]:
-    """Dynamically fan out and dispatch three specialized subagents in parallel."""
+    """Dynamically fan out and dispatch five specialized subagents in parallel."""
     return [
         Send("log_analyzer", {
             "incident_context": state["incident_context"],
@@ -472,6 +500,14 @@ def route_to_subagents(state: AgentState) -> list[Send]:
             "sandbox_id": state["sandbox_id"],
         }),
         Send("db_inspector", {
+            "incident_context": state["incident_context"],
+            "sandbox_id": state["sandbox_id"],
+        }),
+        Send("apm_analyzer", {
+            "incident_context": state["incident_context"],
+            "sandbox_id": state["sandbox_id"],
+        }),
+        Send("git_blame", {
             "incident_context": state["incident_context"],
             "sandbox_id": state["sandbox_id"],
         }),
@@ -495,6 +531,8 @@ def build_orchestrator(
     graph.add_node("log_analyzer", log_analyzer_node)
     graph.add_node("deploy_diff", deploy_diff_node)
     graph.add_node("db_inspector", db_inspector_node)
+    graph.add_node("apm_analyzer", apm_analyzer_node)
+    graph.add_node("git_blame", git_blame_node)
     graph.add_node("aggregate", aggregate_node)
     graph.add_node("reproduce", reproduce_node)
     graph.add_node("patch", patch_node)
@@ -513,12 +551,14 @@ def build_orchestrator(
             return "reproduce"
         return route_to_subagents(state)
 
-    graph.add_conditional_edges("check_memory", route_after_memory, ["log_analyzer", "deploy_diff", "db_inspector", "reproduce"])
+    graph.add_conditional_edges("check_memory", route_after_memory, ["log_analyzer", "deploy_diff", "db_inspector", "apm_analyzer", "git_blame", "reproduce"])
 
     # Gather: each subagent node flows directly into the aggregate node
     graph.add_edge("log_analyzer", "aggregate")
     graph.add_edge("deploy_diff", "aggregate")
     graph.add_edge("db_inspector", "aggregate")
+    graph.add_edge("apm_analyzer", "aggregate")
+    graph.add_edge("git_blame", "aggregate")
 
     # Linear flow for resolution
     graph.add_edge("aggregate", "reproduce")
