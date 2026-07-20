@@ -3,7 +3,7 @@
 CLI entrypoint to run an incident triage process using the orchestrator agent.
 
 Usage:
-    python scripts/run_incident.py incidents/sample_n_plus_one.json
+    python scripts/run_incident.py --incident incidents/sample_n_plus_one.json
 """
 from __future__ import annotations
 
@@ -23,8 +23,9 @@ def main() -> None:
         description="Run SRE Orchestrator Agent on an incident payload."
     )
     parser.add_argument(
-        "incident_file",
+        "--incident",
         type=str,
+        required=True,
         help="Path to the incident JSON payload file",
     )
     parser.add_argument(
@@ -41,7 +42,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Resolve file path
-    file_path = Path(args.incident_file)
+    file_path = Path(args.incident)
     if not file_path.exists():
         print(f"❌  Error: File not found: {file_path}", file=sys.stderr)
         sys.exit(1)

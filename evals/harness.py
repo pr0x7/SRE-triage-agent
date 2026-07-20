@@ -52,13 +52,18 @@ class EvalHarness:
         if reg_test.exists():
             reg_test.unlink()
 
-        # Remove checkpoints.db
-        checkpoints_db = PROJECT_ROOT / "checkpoints.db"
-        if checkpoints_db.exists():
-            try:
-                checkpoints_db.unlink()
-            except Exception:
-                pass
+        # Remove database files
+        db_files = [
+            "checkpoints.db", "checkpoints.db-wal", "checkpoints.db-shm",
+            "store.db", "store.db-wal", "store.db-shm"
+        ]
+        for db_file in db_files:
+            db_path = PROJECT_ROOT / db_file
+            if db_path.exists():
+                try:
+                    db_path.unlink()
+                except Exception:
+                    pass
 
     def run_eval_for_bug(self, bug_name: str) -> dict[str, Any]:
         """Run the end-to-end agent triage and patching flow for a single bug."""
@@ -68,10 +73,15 @@ class EvalHarness:
         
         # 1. Clean previous run state
         clear_active_bug()
-        checkpoints_db = PROJECT_ROOT / "checkpoints.db"
-        if checkpoints_db.exists():
-            try: checkpoints_db.unlink()
-            except Exception: pass
+        db_files = [
+            "checkpoints.db", "checkpoints.db-wal", "checkpoints.db-shm",
+            "store.db", "store.db-wal", "store.db-shm"
+        ]
+        for db_file in db_files:
+            db_path = PROJECT_ROOT / db_file
+            if db_path.exists():
+                try: db_path.unlink()
+                except Exception: pass
 
         # Restore the buggy file to be evaluated
         bug_path = PROJECT_ROOT / "breakomatic" / "bugs" / f"{bug_name}.py"

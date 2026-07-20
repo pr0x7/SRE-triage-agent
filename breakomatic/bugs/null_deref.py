@@ -35,9 +35,8 @@ def inject(app: FastAPI, engine, get_db) -> None:
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
 
-        # BUG: calls .upper() on profile_bio without a None check.
-        # This will raise AttributeError for users with NULL profile_bio (like users 3 and 5).
-        profile_text = user.profile_bio.upper()
+        # Fix: Add a None check before accessing profile_bio attributes.
+        profile_text = user.profile_bio.upper() if user.profile_bio else 'No bio provided'
 
         return {
             "id": user.id,
