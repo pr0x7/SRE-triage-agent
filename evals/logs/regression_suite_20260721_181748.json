@@ -1,0 +1,264 @@
+{
+  "timestamp": "2026-07-21T18:17:48.040392+00:00",
+  "total_bugs": 5,
+  "trials_per_bug": 5,
+  "total_trials": 25,
+  "total_wall_clock_seconds": 0.0,
+  "per_bug_results": {
+    "n_plus_one": {
+      "pass_fraction": "0/5",
+      "pass_percentage": 0.0,
+      "trials": [
+        {
+          "bug_name": "n_plus_one",
+          "trial": 1,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "n_plus_one",
+          "trial": 2,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "n_plus_one",
+          "trial": 3,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "n_plus_one",
+          "trial": 4,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "n_plus_one",
+          "trial": 5,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        }
+      ]
+    },
+    "null_deref": {
+      "pass_fraction": "0/5",
+      "pass_percentage": 0.0,
+      "trials": [
+        {
+          "bug_name": "null_deref",
+          "trial": 1,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "null_deref",
+          "trial": 2,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "null_deref",
+          "trial": 3,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "null_deref",
+          "trial": 4,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "null_deref",
+          "trial": 5,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        }
+      ]
+    },
+    "bad_migration": {
+      "pass_fraction": "0/5",
+      "pass_percentage": 0.0,
+      "trials": [
+        {
+          "bug_name": "bad_migration",
+          "trial": 1,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "bad_migration",
+          "trial": 2,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "bad_migration",
+          "trial": 3,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "bad_migration",
+          "trial": 4,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "bad_migration",
+          "trial": 5,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        }
+      ]
+    },
+    "leaked_connection": {
+      "pass_fraction": "0/5",
+      "pass_percentage": 0.0,
+      "trials": [
+        {
+          "bug_name": "leaked_connection",
+          "trial": 1,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "leaked_connection",
+          "trial": 2,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "leaked_connection",
+          "trial": 3,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "leaked_connection",
+          "trial": 4,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "leaked_connection",
+          "trial": 5,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        }
+      ]
+    },
+    "broken_env": {
+      "pass_fraction": "0/5",
+      "pass_percentage": 0.0,
+      "trials": [
+        {
+          "bug_name": "broken_env",
+          "trial": 1,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "broken_env",
+          "trial": 2,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "broken_env",
+          "trial": 3,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "broken_env",
+          "trial": 4,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        },
+        {
+          "bug_name": "broken_env",
+          "trial": 5,
+          "passed": false,
+          "score": 0.8,
+          "elapsed_seconds": 0.0,
+          "estimated_tokens": 1450,
+          "estimated_cost_usd": 0.0
+        }
+      ]
+    }
+  }
+}
