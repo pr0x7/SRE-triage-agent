@@ -1,0 +1,7 @@
+service_name: "user-auth-service"
+language: "python"
+framework: "fastapi"
+entrypoint: "uvicorn user_auth_service.app:app --host 0.0.0.0 --port 8000"
+build_command: "pip install -e ."
+test_command: "pytest evals/generalization_repos/user_auth_service/test_auth.py"
+log_source: "/tmp/user_auth_service.log"

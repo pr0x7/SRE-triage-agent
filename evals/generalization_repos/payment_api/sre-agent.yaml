@@ -1,0 +1,7 @@
+service_name: "payment-api"
+language: "python"
+framework: "flask"
+entrypoint: "flask run --host=0.0.0.0 --port=5000"
+build_command: "pip install -e ."
+test_command: "pytest evals/generalization_repos/payment_api/test_app.py"
+log_source: "/tmp/payment_api.log"

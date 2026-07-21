@@ -1,0 +1,7 @@
+service_name: "task-worker"
+language: "python"
+framework: "celery"
+entrypoint: "python -m task_worker.worker"
+build_command: "pip install -e ."
+test_command: "pytest evals/generalization_repos/task_worker/test_worker.py"
+log_source: "/tmp/task_worker.log"

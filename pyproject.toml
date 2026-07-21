@@ -17,11 +17,13 @@ dependencies = [
     "langchain-groq",                    # Groq free tier (zero cost)
     "langgraph-checkpoint-sqlite",
 
-    # --- Break-o-matic target service ---
+    # --- Break-o-matic target service & benchmark dependencies ---
     "fastapi",
+    "flask",
     "uvicorn[standard]",
     "sqlalchemy",
     "pydantic>=2.0",
+    "pyyaml",
 
     # --- Sandbox backend ---
     "docker>=7.0",
