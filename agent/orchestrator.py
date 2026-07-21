@@ -98,6 +98,8 @@ class AgentState(TypedDict):
     approval_diff: str
     # Phase 10: time-travel branching
     rejected_hypotheses: Annotated[list[str], operator.add]
+    # Phase 15: repo profile metadata
+    repo_profile: dict[str, Any]
 
 
 class SubagentInput(TypedDict):
@@ -127,6 +129,18 @@ def start_sandbox_node(state: AgentState) -> dict:
         "sandbox_id": sandbox.id,
         "subagent_outputs": [],
         "phase": "check_memory",
+    }
+
+
+def repo_profiler_node(state: AgentState) -> dict:
+    """Introspect repository to generate repo profile metadata for downstream agents."""
+    logger.info("orchestrator: running repo profiler subagent...")
+    from agent.subagents.repo_profiler import profile_repository
+    project_root = Path(__file__).parent.parent
+    profile = profile_repository(project_root)
+    logger.info(f"orchestrator: repository profile generated for service '{profile.service_name}'.")
+    return {
+        "repo_profile": profile.model_dump(),
     }
 
 
@@ -527,6 +541,7 @@ def build_orchestrator(
 
     # Add Nodes
     graph.add_node("start_sandbox", start_sandbox_node)
+    graph.add_node("repo_profiler", repo_profiler_node)
     graph.add_node("check_memory", check_memory_node)
     graph.add_node("log_analyzer", log_analyzer_node)
     graph.add_node("deploy_diff", deploy_diff_node)
@@ -543,8 +558,9 @@ def build_orchestrator(
     # Set Entry Point
     graph.set_entry_point("start_sandbox")
 
-    # Flow: start_sandbox -> check_memory -> fan-out OR reproduce
-    graph.add_edge("start_sandbox", "check_memory")
+    # Flow: start_sandbox -> repo_profiler -> check_memory -> fan-out OR reproduce
+    graph.add_edge("start_sandbox", "repo_profiler")
+    graph.add_edge("repo_profiler", "check_memory")
 
     def route_after_memory(state: AgentState):
         if state.get("phase") == "reproduce":
