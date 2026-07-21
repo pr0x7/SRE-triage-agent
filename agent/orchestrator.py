@@ -147,11 +147,12 @@ def repo_profiler_node(state: AgentState) -> dict:
 
 
 def check_memory_node(state: AgentState, store: BaseStore) -> dict:
-    """Check if the incident matches a known pattern in memory."""
+    """Check if the incident matches a known pattern in memory for the target repository."""
     logger.info("orchestrator: checking memory for known incidents...")
     incident_context = state.get("incident_context", "")
+    repo_name = state.get("repo_profile", {}).get("service_name", "breakomatic")
     
-    match = search_memory(incident_context, store)
+    match = search_memory(incident_context, store, repo_name=repo_name)
     if match:
         logger.info(f"orchestrator: Memory hit! Known bug: {match}. Verifying the known fix still applies.")
         print(f"\n🧠  I've seen this, verifying the known fix still applies (Known Bug: {match})\n")
@@ -510,9 +511,10 @@ def diagnose_node(state: AgentState, store: BaseStore) -> dict:
         }, indent=2)
 
     bug_name = state.get("selected_bug", "unknown")
+    repo_name = state.get("repo_profile", {}).get("service_name", "breakomatic")
     if bug_name != "unknown":
         try:
-            save_to_memory(bug_name, diagnosis_data, store)
+            save_to_memory(bug_name, diagnosis_data, store, repo_name=repo_name)
         except Exception as e:
             logger.error(f"orchestrator: failed to save to memory: {e}")
 
