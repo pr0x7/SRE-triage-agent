@@ -1,0 +1,10 @@
+# SRE Agent Configuration for break-o-matic target service
+service_name: "breakomatic"
+language: "python"
+framework: "fastapi"
+entrypoint: "uvicorn breakomatic.app:app --host 0.0.0.0 --port 8099"
+build_command: "pip install -e ."
+test_command: "pytest evals/test_breakomatic_app.py"
+log_source: "/tmp/breakomatic.log"
+db_connection_string: "sqlite:////workspace/breakomatic/breakomatic.db"
+deploy_remote: "origin/main"

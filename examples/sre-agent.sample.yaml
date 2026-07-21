@@ -1,0 +1,10 @@
+# Declarative configuration for an external Python service (e.g. payment-service)
+service_name: "payment-service"
+language: "python"
+framework: "flask"
+entrypoint: "python -m payment_service.server --port 5000"
+build_command: "pip install -r requirements.txt"
+test_command: "pytest tests/unit/"
+log_source: "/var/log/payment_service.log"
+db_connection_string: "postgresql://readonly:secret@localhost:5432/payment_db"
+deploy_remote: "git@github.com:myorg/payment-service.git"

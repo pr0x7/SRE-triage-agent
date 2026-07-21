@@ -31,13 +31,28 @@ Orchestrator (deepagents: create_deep_agent)
               Human approval gate → rubric grading → memory store
 ```
 
-## Stack
+## Supported Stack v1 & Declarative Configuration
 
-- **deepagents** — agent harness (planning, subagents, filesystem, memory, rubric)
-- **LangGraph** — custom state machines (repro-agent)
-- **Google Gemini** — LLM provider (free tier, zero cost)
-- **Docker** — sandboxed execution backend (local, free)
-- **break-o-matic** — synthetic target service with injectable bugs
+To generalize the agent across repositories beyond `break-o-matic`, repo owners provide an `sre-agent.yaml` configuration file.
+
+### Scope: Supported Stack v1
+- **Language**: Python 3.10+
+- **Environment**: Docker containerized sandbox
+- **Testing Framework**: `pytest`
+
+### Declarative Schema (`sre-agent.yaml`)
+```yaml
+service_name: "my-service"
+language: "python"
+framework: "fastapi" # or flask, django, etc.
+entrypoint: "uvicorn my_service.app:app --host 0.0.0.0 --port 8080"
+build_command: "pip install -e ."
+test_command: "pytest tests/"
+log_source: "/tmp/app.log"
+db_connection_string: "postgresql://readonly:secret@localhost:5432/mydb" # optional
+deploy_remote: "origin/main" # optional
+```
+Sample configuration files are available at [`sre-agent.yaml`](file:///Users/prox/Desktop/SRE/sre-agent.yaml) and [`examples/sre-agent.sample.yaml`](file:///Users/prox/Desktop/SRE/examples/sre-agent.sample.yaml).
 
 ## Installation & Setup
 
