@@ -54,7 +54,7 @@ class DockerSandbox(BaseSandbox):
         self,
         image: str = "python:3.11-slim",
         workdir: str = "/workspace",
-        network_mode: str = "bridge",   # set to "none" if no outbound net needed
+        network_mode: str = "none",   # Default restricted egress network mode for security
         client: docker.DockerClient | None = None,
     ) -> None:
         self._client = client or docker.from_env()

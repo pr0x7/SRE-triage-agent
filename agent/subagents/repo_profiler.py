@@ -78,12 +78,20 @@ def _infer_heuristics(snippets: dict[str, str], repo_name: str) -> dict[str, Any
 
     entrypoint = f"python -m {repo_name}"
     dockerfile = snippets.get("Dockerfile", "")
-    if "uvicorn" in dockerfile:
-        entrypoint = f"uvicorn {repo_name}.app:app --host 0.0.0.0 --port 8099"
-    elif "flask" in dockerfile or "flask" in snippets.get("requirements.txt", ""):
-        entrypoint = f"flask run --host=0.0.0.0 --port=5000"
+    for line in dockerfile.splitlines():
+        if line.strip().startswith("CMD"):
+            import re
+            cmds = re.findall(r'"([^"]+)"', line) or re.findall(r"'([^']+)'", line)
+            if cmds:
+                entrypoint = " ".join(cmds)
+                break
 
-    framework = "fastapi" if "uvicorn" in entrypoint or "fastapi" in snippets.get("pyproject.toml", "") else "python"
+    if "uvicorn" in entrypoint or "uvicorn" in dockerfile:
+        framework = "fastapi"
+    elif "flask" in entrypoint or "flask" in dockerfile or "flask" in snippets.get("requirements.txt", ""):
+        framework = "flask"
+    else:
+        framework = "python"
 
     return {
         "service_name": repo_name,
@@ -146,6 +154,8 @@ def profile_repository(repo_path: Path | str) -> SREAgentConfig:
                 raw = "\n".join(lines).strip()
 
             llm_profile = json.loads(raw)
+            if llm_profile.get("framework") in ("other", "python", None) and heuristics.get("framework") not in ("python", None):
+                llm_profile["framework"] = heuristics["framework"]
         except Exception:
             pass
 

@@ -100,6 +100,8 @@ class AgentState(TypedDict):
     rejected_hypotheses: Annotated[list[str], operator.add]
     # Phase 15: repo profile metadata
     repo_profile: dict[str, Any]
+    # Phase 19: plan-only dry-run mode
+    plan_only: bool
 
 
 class SubagentInput(TypedDict):
@@ -366,10 +368,32 @@ def reproduce_node(state: AgentState) -> dict:
 def patch_node(state: AgentState) -> dict:
     """Run the patch writer subagent to fix the bug and create regression tests."""
     selected_bug = state["selected_bug"]
-    logger.info(f"orchestrator: invoking patch-writer for bug: {selected_bug}...")
+    is_plan_only = state.get("plan_only", False)
+    logger.info(f"orchestrator: invoking patch-writer for bug: {selected_bug} (plan_only={is_plan_only})...")
 
-    from agent.subagents.patch_writer import run_patch_writer
-    patch_output = run_patch_writer(selected_bug)
+    from agent.audit import AuditLogger
+    audit_logger = AuditLogger.get_instance()
+
+    if is_plan_only:
+        audit_logger.log_event(
+            tool_name="patch_writer",
+            caller_node="patch_node",
+            target_system="sandbox",
+            input_summary=f"Plan-only dry-run for bug {selected_bug}. Skipped file modification.",
+            status="DRY_RUN",
+        )
+        patch_output = f"[PLAN-ONLY DRY RUN] Proposed investigation plan & fix generated for hypothesis '{selected_bug}'. No system files modified."
+    else:
+        from agent.subagents.patch_writer import run_patch_writer
+        patch_output = run_patch_writer(selected_bug)
+        audit_logger.log_event(
+            tool_name="patch_writer",
+            caller_node="patch_node",
+            target_system="sandbox",
+            input_summary=f"Applied patch fix for bug {selected_bug}.",
+            status="SUCCESS",
+        )
+
     logger.info(f"orchestrator: patch-writer completed. Output preview: {patch_output[:300]}")
     return {
         "patch_result": patch_output,
