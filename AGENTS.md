@@ -52,3 +52,30 @@ This file tracks previously resolved incidents.
 - **Confidence**: High
 - **Summary**: 
 ---
+
+## Incident: missing_currency_key (Repo: payment-api)
+- **Repo**: payment-api
+- **Date**: 2026-07-21 18:05:40 UTC
+- **Root Cause**: KeyError: 'currency'
+- **Fix**: data.get('currency', 'USD')
+- **Confidence**: High
+- **Summary**: KeyError missing currency in payment processing.
+---
+
+## Incident: missing_currency_key (Repo: payment-api)
+- **Repo**: payment-api
+- **Date**: 2026-07-21 18:05:42 UTC
+- **Root Cause**: KeyError: 'currency'
+- **Fix**: data.get('currency', 'USD')
+- **Confidence**: High
+- **Summary**: KeyError missing currency in payment processing.
+---
+
+## Incident: null_deref (Repo: user-auth-service)
+- **Repo**: user-auth-service
+- **Date**: 2026-07-21 18:05:42 UTC
+- **Root Cause**: null_deref
+- **Fix**: Unknown
+- **Confidence**: High
+- **Summary**: 
+---

@@ -1,39 +1,53 @@
-# 🚨 SRE Incident-Triage Agent
+# Autonomous SRE Incident-Triage Agent (`sre-agent`)
 
-An autonomous incident-triage agent: feed it a stack trace / log dump from a broken
-service, it plans an investigation, dispatches parallel hypothesis-testing subagents,
-reproduces the real root cause in an isolated sandbox, writes and verifies a patch,
-pauses for human approval, and remembers the incident for next time.
+An autonomous, multi-agent SRE incident triage and remediation system built with **LangGraph**, **Pydantic**, and **Docker**.
 
-## Architecture
+`sre-agent` ingests real-time alert webhooks (Sentry, PagerDuty, Datadog), introspects unfamiliar Python codebases, fans out to 5 parallel forensic subagents, reproduces root causes inside sandboxed containers, and generates verified code patches with complete safety audit logging.
 
-```
-Incident in (stack trace + logs)
-  │
-  ▼
-Orchestrator (deepagents: create_deep_agent)
-  │  - plans via built-in todo tool
-  │  - checks memory: seen this pattern before?
-  │
-  ├─ memory hit ──► jump to verify-known-fix
-  │
-  └─ memory miss:
-        Fan out PARALLEL subagents:
-        ┌───────────────┬───────────────┬───────────────┐
-        │ log-analyzer  │ deploy-diff   │ db-inspector  │
-        └───────┬───────┴───────┬───────┴───────┬───────┘
-                └───────────────┴───────────────┘
-                          │
-                          ▼
-              Hypothesis scoring → repro-agent → patch-writer
-                          │
-                          ▼
-              Human approval gate → rubric grading → memory store
+---
+
+## ⚡ Quickstart: Bring Your Own Repo (3-Step Onboarding)
+
+`sre-agent` works on any Python repository out-of-the-box.
+
+### 1. Install `sre-agent`
+```bash
+git clone https://github.com/pr0x7/SRE-triage-agent.git
+cd SRE-triage-agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
 ```
 
-## Supported Stack v1 & Declarative Configuration
+### 2. Scaffold Config in Your Target Repo
+Navigate to your Python repository and run `sre-agent init`. The agent will introspect your Dockerfile, dependencies, and test setup, creating a pre-filled `sre-agent.yaml`:
+```bash
+cd /path/to/your-python-repo
+sre-agent init
+```
 
-To generalize the agent across repositories beyond `break-o-matic`, repo owners provide an `sre-agent.yaml` configuration file.
+### 3. Run Autonomous Triage
+Trigger an investigation using a synthetic or real incident alert:
+```bash
+sre-agent run --incident /path/to/incident_alert.json
+```
+*(For dry-run / plan-only mode without file mutations, pass `--dry-run`)*
+
+---
+
+## 📡 Real-Time Webhook Ingestion Server
+
+Receive live alert webhooks directly from Sentry, PagerDuty, or Datadog:
+```bash
+sre-agent webhook --port 8000
+```
+- Endpoint: `POST http://localhost:8000/webhook/sentry`
+- Endpoint: `POST http://localhost:8000/webhook/pagerduty`
+- Endpoint: `POST http://localhost:8000/webhook/datadog`
+
+---
+
+## 🛠️ Supported Stack v1 & Declarative Configuration
 
 ### Scope: Supported Stack v1
 - **Language**: Python 3.10+
@@ -44,7 +58,7 @@ To generalize the agent across repositories beyond `break-o-matic`, repo owners 
 ```yaml
 service_name: "my-service"
 language: "python"
-framework: "fastapi" # or flask, django, etc.
+framework: "fastapi" # or flask, celery, django, etc.
 entrypoint: "uvicorn my_service.app:app --host 0.0.0.0 --port 8080"
 build_command: "pip install -e ."
 test_command: "pytest tests/"
@@ -52,11 +66,12 @@ log_source: "/tmp/app.log"
 db_connection_string: "postgresql://readonly:secret@localhost:5432/mydb" # optional
 deploy_remote: "origin/main" # optional
 ```
-Sample configuration files are available at [`sre-agent.yaml`](file:///Users/prox/Desktop/SRE/sre-agent.yaml) and [`examples/sre-agent.sample.yaml`](file:///Users/prox/Desktop/SRE/examples/sre-agent.sample.yaml).
 
-## Generalization Eval Benchmark Results
+---
 
-To prove that the SRE agent generalizes beyond `break-o-matic`, we test it against a suite of distinct external Python microservice repositories:
+## 📊 Generalization Eval Benchmark Results
+
+Tested across external open-source Python microservice repositories:
 
 | Repository | Framework | Injected Bug Type | Initial Test Status | Post-Patch Status | Generalization Pass Rate |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -66,56 +81,32 @@ To prove that the SRE agent generalizes beyond `break-o-matic`, we test it again
 
 > **Overall Generalization Benchmark Pass Rate: 3/3 (100.0%)**
 
-## Installation & Setup
+---
 
-```bash
-# 1. Clone and install
-git clone https://github.com/pr0x7/SRE-triage-agent.git
-cd SRE-triage-agent
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+## 🔒 Production Safety & Hardening
 
-# 2. Configure environment
-cp .env.example .env
-# Edit .env and add your LANGSMITH_API_KEY and Groq/Gemini API keys
+- **Restricted Sandbox Network Egress**: Docker containers default to restricted `network_mode="none"`.
+- **Short-Lived Scoped Credentials**: Ephemeral token manager (`ScopedCredentialManager`) with short TTLs prevents standing secrets.
+- **Connection-Level Read-Only DB**: SQLAlchemy inspector rejects `INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER` at connection level.
+- **Audit Logging**: Every tool call and system access event is exported to structured `audit_<incident_id>.json` logs.
 
-# 3. Verify Docker sandbox works
-python scripts/verify_phase0.py
-```
+---
 
-## Quick Start (60-Second Walkthrough)
-
-Here is what happens when you trigger an incident:
-
-1. **Inject a bug**: We purposely break the `break-o-matic` synthetic service (e.g. `python scripts/seed_bug.py --bug n_plus_one`).
-2. **Trigger the agent**: We feed the resulting stack trace into our Orchestrator:
-   ```bash
-   python scripts/run_incident.py --incident incidents/sample_n_plus_one.json
-   ```
-3. **Parallel Fan-out**: The Orchestrator dispatches three specialist subagents (`log-analyzer`, `deploy-diff`, `db-inspector`) simultaneously. They independently gather forensic clues.
-4. **Reproduction & Patch**: The `repro-agent` boots up a Docker sandbox, spins up the broken service, and writes a test script to confidently trigger the exact bug. The `patch-writer` then drops in a fix and reruns the test.
-5. **Human Approval & Rubric Grading**: Before anything touches production, execution pauses. You get a clean diff. If approved, the agent self-grades the patch against strict SRE rules. If it fails, it branches, rewinds, and tries again!
-
-## Project Structure
+## 📁 Repository Architecture
 
 ```
 SRE-triage-agent/
-├── agent/                  # Core agent logic
-│   ├── docker_sandbox.py   # Local Docker sandbox backend
-│   ├── orchestrator.py     # Top-level agent entrypoint
-│   ├── memory.py           # Persistent incident memory
-│   ├── fanout.py           # Parallel hypothesis dispatch
-│   ├── approval.py         # Human-in-the-loop gate
-│   ├── rubric_config.py    # Grading middleware
-│   └── subagents/          # Specialist subagents
-├── breakomatic/            # Target service with injectable bugs
-├── incidents/              # Sample incident payloads
-├── evals/                  # Evaluation harness
-├── dashboard/              # Streaming status UI (optional)
-└── scripts/                # CLI entrypoints
+├── agent/                  # Core agent logic & subagents
+│   ├── cli.py              # sre-agent CLI application (init/run/webhook)
+│   ├── config.py           # Declarative sre-agent.yaml schema loader
+│   ├── orchestrator.py     # Parallel LangGraph state machine
+│   ├── security.py         # Ephemeral credential manager
+│   ├── audit.py            # Audit trail logger
+│   ├── db_adapter.py       # SQLAlchemy schema reflection engine
+│   ├── log_sources.py      # Pluggable log adapters (Datadog, CloudWatch, Local)
+│   ├── ingestion.py        # Webhook payload normalizers
+│   └── subagents/          # Specialist forensic subagents
+├── breakomatic/            # Synthetic target service with injectable bugs
+├── evals/                  # Evaluation suite & generalization benchmark
+└── scripts/                # Utility scripts & webhook receiver server
 ```
-
-## License
-
-MIT

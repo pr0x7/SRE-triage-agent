@@ -46,6 +46,7 @@ dev = [
 ]
 
 [project.scripts]
+sre-agent = "agent.cli:main"
 sre-run = "scripts.run_incident:main"
 sre-seed = "scripts.seed_bug:main"
 
